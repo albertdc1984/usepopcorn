@@ -6,6 +6,7 @@ import Box from "./components/Box";
 import MovieList from "./components/MovieList";
 import WatchedSummary from "./components/WatchedSummary";
 import WatchedMoviesList from "./components/WatchedMoviesList";
+import StarRating from "./components/StarRating";
 
 const tempMovieData = [
   {
@@ -57,15 +58,16 @@ const tempWatchedData = [
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
+  const [movieRating, setMovieRating] = useState(0);
 
   return (
     <>
       <Navbar>
-        <NumResults movies={movies} />
+        <NumResults movies={movies} setMovies={setMovies} />
       </Navbar>
       <Main>
         <Box>
-          <MovieList movies={movies} />
+          <MovieList movies={movies} setWatched={setWatched} />
         </Box>
         <Box>
           <>
@@ -74,6 +76,27 @@ export default function App() {
             <WatchedMoviesList watched={watched} />
           </>
         </Box>
+        <div className="rating" style={{ width: "100vw" }}>
+          <StarRating
+            maxRating={5}
+            messages={["Terrible", "Bad", "Okay", "Good", "Masterpiece"]}
+            defaultRating={3}
+            onSetRating={setMovieRating}
+            movieRating={movieRating}
+          />
+        </div>
+        {/* <Box
+            element={
+              <>
+                <WatchedSummary watched={watched} />
+
+                <WatchedMoviesList watched={watched} />
+              </>
+            }
+          />         
+          
+          
+          */}
       </Main>
     </>
   );
