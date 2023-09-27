@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Navbar from "./components/Navbar";
 import Main from "./components/Main";
 import NumResults from "./components/NumResults";
@@ -6,10 +6,9 @@ import Box from "./components/Box";
 import MovieList from "./components/MovieList";
 import WatchedSummary from "./components/WatchedSummary";
 import WatchedMoviesList from "./components/WatchedMoviesList";
-//import StarRating from "./components/StarRating";
-import Loader from "./components/Loader";
+import StarRating from "./components/StarRating";
 
-/* const tempMovieData = [
+const tempMovieData = [
   {
     imdbID: "tt1375666",
     Title: "Inception",
@@ -54,29 +53,12 @@ const tempWatchedData = [
     imdbRating: 8.5,
     userRating: 9,
   },
-]; */
-
-const KEY = "34db19ce";
-const query = "clockwork";
+];
 
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
-  //const [movieRating, setMovieRating] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-
-  async function fetchMovies() {
-    setIsLoading(true);
-    const res = await fetch(
-      `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`
-    );
-    const data = await res.json();
-    setMovies(data.Search);
-    setIsLoading(false);
-  }
-  useEffect(() => {
-    fetchMovies();
-  }, []);
+  const [movies, setMovies] = useState(tempMovieData);
+  const [watched, setWatched] = useState(tempWatchedData);
+  const [movieRating, setMovieRating] = useState(0);
 
   return (
     <>
@@ -85,11 +67,7 @@ export default function App() {
       </Navbar>
       <Main>
         <Box>
-          {isLoading ? (
-            <Loader />
-          ) : (
-            <MovieList movies={movies} setWatched={setWatched} />
-          )}
+          <MovieList movies={movies} setWatched={setWatched} />
         </Box>
         <Box>
           <>
@@ -98,7 +76,7 @@ export default function App() {
             <WatchedMoviesList watched={watched} />
           </>
         </Box>
-        {/*>div className="rating" style={{ width: "100vw" }}>
+        <div className="rating" style={{ width: "100vw" }}>
           <StarRating
             maxRating={5}
             messages={["Terrible", "Bad", "Okay", "Good", "Masterpiece"]}
@@ -107,7 +85,7 @@ export default function App() {
             movieRating={movieRating}
           />
         </div>
-         <Box
+        {/* <Box
             element={
               <>
                 <WatchedSummary watched={watched} />
