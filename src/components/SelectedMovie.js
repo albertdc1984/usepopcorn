@@ -45,17 +45,16 @@ export default function SelctedMovie({
     onCloseMovie();
   };
 
-  const getMovieDetails = async () => {
-    setIsLoading(true);
-    const res = await fetch(
-      `https://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
-    );
-    const data = await res.json();
-    setMovie(data);
-    setIsLoading(false);
-  };
-
   useEffect(() => {
+    const getMovieDetails = async () => {
+      setIsLoading(true);
+      const res = await fetch(
+        `https://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+      );
+      const data = await res.json();
+      setMovie(data);
+      setIsLoading(false);
+    };
     getMovieDetails();
   }, [selectedId]);
 
