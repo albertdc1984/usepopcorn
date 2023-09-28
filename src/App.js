@@ -10,6 +10,7 @@ import WatchedMoviesList from "./components/WatchedMoviesList";
 import Loader from "./components/Loader";
 import ErrorMessage from "./components/ErrorMessage";
 import Search from "./components/Search";
+import SelctedMovie from "./components/SelectedMovie";
 
 /* const tempMovieData = [
   {
@@ -58,23 +59,23 @@ const tempWatchedData = [
   },
 ]; */
 
-const KEY = "34db19ce";
-const tempQuery = "clockwork orange";
+export const KEY = "34db19ce";
+const tempQuery = "popcorn";
 
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [query, setQuery] = useState(tempQuery);
-  //const [movieRating, setMovieRating] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
 
   async function fetchMovies() {
     try {
       setIsLoading(true);
       setError("");
       const res = await fetch(
-        `https://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`
+        `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`
       );
       if (!res.ok) throw new Error("Something went wrog with fetching movies");
 
@@ -90,6 +91,23 @@ export default function App() {
       setIsLoading(false);
     }
   }
+
+  const handleSelectedId = (id) => {
+    setSelectedId(selectedId === id ? null : id);
+  };
+
+  const handleUnelectId = () => {
+    setSelectedId(null);
+  };
+
+  const handleAddWatched = (movie) => {
+    setWatched((watched) => [...watched, movie]);
+  };
+
+  const handleDeleteWatched = (id) => {
+    setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
+  };
+
   useEffect(() => {
     if (query.length < 2) {
       setMovies([]);
@@ -109,16 +127,32 @@ export default function App() {
         <Box>
           {isLoading && <Loader />}
           {!isLoading && !error && (
-            <MovieList movies={movies} setWatched={setWatched} />
+            <MovieList
+              movies={movies}
+              setWatched={setWatched}
+              onSelectedId={handleSelectedId}
+            />
           )}
           {error && <ErrorMessage message={error} />}
         </Box>
         <Box>
-          <>
-            <WatchedSummary watched={watched} />
+          {selectedId ? (
+            <SelctedMovie
+              selectedId={selectedId}
+              onCloseMovie={handleUnelectId}
+              onAddWatched={handleAddWatched}
+              watched={watched}
+            />
+          ) : (
+            <>
+              <WatchedSummary watched={watched} />
 
-            <WatchedMoviesList watched={watched} />
-          </>
+              <WatchedMoviesList
+                watched={watched}
+                onDeleteWatched={handleDeleteWatched}
+              />
+            </>
+          )}
         </Box>
         {/*>div className="rating" style={{ width: "100vw" }}>
           <StarRating

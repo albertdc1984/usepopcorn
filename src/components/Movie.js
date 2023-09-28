@@ -1,12 +1,13 @@
-export default function Movie({ movie }) {
+export default function Movie({ movie, onSelectedId }) {
+  const { Title: title, Year: year, Poster: poster } = movie;
   return (
-    <li>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
+    <li onClick={() => onSelectedId(movie.imdbID)}>
+      <img src={poster} alt={`${title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
         <p>
           <span>🗓</span>
-          <span>{movie.Year}</span>
+          <span>{year}</span>
         </p>
       </div>
     </li>
