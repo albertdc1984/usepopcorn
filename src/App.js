@@ -60,12 +60,11 @@ const tempWatchedData = [
 ]; */
 
 export const KEY = "34db19ce";
-const tempQuery = "popcorn";
 
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
-  const [query, setQuery] = useState(tempQuery);
+  const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
@@ -74,7 +73,7 @@ export default function App() {
     setSelectedId(selectedId === id ? null : id);
   };
 
-  const handleUnelectId = () => {
+  const handleUnselectId = () => {
     setSelectedId(null);
   };
 
@@ -87,12 +86,15 @@ export default function App() {
   };
 
   useEffect(() => {
+    const controller = new AbortController();
+
     async function fetchMovies() {
       try {
         setIsLoading(true);
         setError("");
         const res = await fetch(
-          `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+          `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+          { signal: controller.signal }
         );
         if (!res.ok)
           throw new Error("Something went wrog with fetching movies");
@@ -102,9 +104,12 @@ export default function App() {
         if (data.Response === "False") throw new Error("Movie not found");
 
         setMovies(data.Search);
+        setError("");
       } catch (err) {
         console.log(err.message);
-        setError(err.message);
+        if (err.name !== "AbortError") {
+          setError(err.message);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -114,7 +119,13 @@ export default function App() {
       setError("");
       return;
     }
+
+    handleUnselectId();
     fetchMovies();
+
+    return () => {
+      controller.abort();
+    };
   }, [query]);
 
   return (
@@ -139,7 +150,7 @@ export default function App() {
           {selectedId ? (
             <SelctedMovie
               selectedId={selectedId}
-              onCloseMovie={handleUnelectId}
+              onCloseMovie={handleUnselectId}
               onAddWatched={handleAddWatched}
               watched={watched}
             />
