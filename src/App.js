@@ -9,6 +9,7 @@ import WatchedMoviesList from "./components/WatchedMoviesList";
 //import StarRating from "./components/StarRating";
 import Loader from "./components/Loader";
 import ErrorMessage from "./components/ErrorMessage";
+import Search from "./components/Search";
 
 /* const tempMovieData = [
   {
@@ -58,11 +59,12 @@ const tempWatchedData = [
 ]; */
 
 const KEY = "34db19ce";
-const query = "asdfcngvierndafvb";
+const tempQuery = "clockwork orange";
 
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
+  const [query, setQuery] = useState(tempQuery);
   //const [movieRating, setMovieRating] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -70,6 +72,7 @@ export default function App() {
   async function fetchMovies() {
     try {
       setIsLoading(true);
+      setError("");
       const res = await fetch(
         `https://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`
       );
@@ -88,12 +91,18 @@ export default function App() {
     }
   }
   useEffect(() => {
+    if (query.length < 2) {
+      setMovies([]);
+      setError("");
+      return;
+    }
     fetchMovies();
-  }, []);
+  }, [query]);
 
   return (
     <>
       <Navbar>
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} setMovies={setMovies} />
       </Navbar>
       <Main>
